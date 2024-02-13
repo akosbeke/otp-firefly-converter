@@ -2,7 +2,7 @@ import fs from "fs";
 import * as XLSX from "xlsx";
 import md5 from "md5";
 import moment from "moment";
-import chokidar from "chokidar";
+import watcher from "@parcel/watcher";
 import * as csv from "csv";
 
 const WATCH_FOLDERS = {
@@ -12,27 +12,50 @@ const WATCH_FOLDERS = {
 const HISTORY_FOLDER = "./history";
 const FIREFLY_CONFIG_DIR = "./firefly-config";
 
-chokidar.watch(WATCH_FOLDERS.OTP).on("add", (path) => {
-  if (path.endsWith(".xlsx")) {
-    console.log(`File ${path} has been added`);
-
-    convertOtpXlsxToCsv(path);
-
-    // Remove the file after processing
-    fs.unlinkSync(path);
+watcher.subscribe(WATCH_FOLDERS.OTP, (err, events) => {
+  if (err) {
+    console.error(err);
+  } else {
+    events.forEach((event) => {
+      if (event.type === "create") {
+        if (event.path.endsWith(".xlsx")) {
+          console.log(`File ${event.path} has been added`);
+          convertOtpXlsxToCsv(event.path);
+        }
+        // Remove the file after processing
+        fs.unlinkSync(event.path);
+      }
+    });
   }
 });
 
-chokidar.watch(WATCH_FOLDERS.REVOLUT).on("add", (path) => {
-  if (path.endsWith(".csv")) {
-    console.log(`File ${path} has been added`);
-
-    convertRevolutCsvToCsv(path);
-
-    // Remove the file after processing
-    fs.unlinkSync(path);
+watcher.subscribe(WATCH_FOLDERS.REVOLUT, (err, events) => {
+  if (err) {
+    console.error(err);
+  } else {
+    events.forEach((event) => {
+      if (event.type === "create") {
+        if (event.path.endsWith(".csv")) {
+          console.log(`File ${event.path} has been added`);
+          convertRevolutCsvToCsv(event.path);
+        }
+        // Remove the file after processing
+        fs.unlinkSync(event.path);
+      }
+    });
   }
 });
+
+// chokidar.watch(WATCH_FOLDERS.REVOLUT).on("add", (path) => {
+//   if (path.endsWith(".csv")) {
+//     console.log(`File ${path} has been added`);
+
+//     convertRevolutCsvToCsv(path);
+
+//     // Remove the file after processing
+//     fs.unlinkSync(path);
+//   }
+// });
 
 const convertOtpXlsxToCsv = (path: string) => {
   const workbook = XLSX.readFile(path);

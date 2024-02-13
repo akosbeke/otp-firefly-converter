@@ -15,7 +15,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "chokidar": "^3.6.0",
+    "@parcel/watcher": "^2.4.0",
     "csv": "^6.3.6",
     "md5": "^2.3.0",
     "moment": "^2.30.1",
