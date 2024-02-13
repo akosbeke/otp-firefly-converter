@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:20-alpine
+FROM node:20
 RUN mkdir -p /usr/code/app
 WORKDIR /usr/code/app
 COPY package.json .
