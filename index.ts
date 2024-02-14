@@ -9,7 +9,7 @@ const WATCH_FOLDERS = {
   OTP: "./watch/otp",
   REVOLUT: "./watch/revolut",
 };
-const HISTORY_FOLDER = "./history";
+const IMPORT_FOLDER = "./import";
 const FIREFLY_CONFIG_DIR = "./firefly-config";
 
 chokidar.watch(WATCH_FOLDERS.OTP, { usePolling: true }).on("add", (path) => {
@@ -67,13 +67,13 @@ const convertOtpXlsxToCsv = (path: string) => {
 
   const fileName = `OTP_${new Date().toISOString()}`;
 
-  // Save the csv file to the history folder
-  fs.writeFileSync(`${HISTORY_FOLDER}/${fileName}.csv`, csvData);
+  // Save the csv file to the import folder
+  fs.writeFileSync(`${IMPORT_FOLDER}/${fileName}.csv`, csvData);
 
   // Save the config with the same file name
   fs.copyFileSync(
     `${FIREFLY_CONFIG_DIR}/otp.json`,
-    `${HISTORY_FOLDER}/${fileName}.json`,
+    `${IMPORT_FOLDER}/${fileName}.json`,
   );
 };
 
@@ -104,8 +104,8 @@ const convertRevolutCsvToCsv = async (path: string) => {
       if (err) {
         console.error(err);
       } else {
-        // Save the csv file to the history folder
-        fs.writeFileSync(`${HISTORY_FOLDER}/${fileName}.csv`, output);
+        // Save the csv file to the import folder
+        fs.writeFileSync(`${IMPORT_FOLDER}/${fileName}.csv`, output);
       }
     }
   });
@@ -113,6 +113,6 @@ const convertRevolutCsvToCsv = async (path: string) => {
   // Save the config with the same file name
   fs.copyFileSync(
     `${FIREFLY_CONFIG_DIR}/revolut.json`,
-    `${HISTORY_FOLDER}/${fileName}.json`,
+    `${IMPORT_FOLDER}/${fileName}.json`,
   );
 };
