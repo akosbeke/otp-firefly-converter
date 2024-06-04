@@ -6,7 +6,8 @@ import chokidar from "chokidar";
 import * as csv from "csv";
 
 const WATCH_FOLDERS = {
-  OTP: "./watch/otp",
+  OTP: "./watch/otp_a",
+  OTP_N: "./watch/otp_n",
   REVOLUT: "./watch/revolut",
 };
 const IMPORT_FOLDER = "./import";
@@ -16,7 +17,18 @@ chokidar.watch(WATCH_FOLDERS.OTP, { usePolling: true }).on("add", (path) => {
   if (path.endsWith(".xlsx")) {
     console.log(`File ${path} has been added`);
 
-    convertOtpXlsxToCsv(path);
+    convertOtpXlsxToCsv(path, "OTP_A");
+
+    // Remove the file after processing
+    fs.unlinkSync(path);
+  }
+});
+
+chokidar.watch(WATCH_FOLDERS.OTP_N, { usePolling: true }).on("add", (path) => {
+  if (path.endsWith(".xlsx")) {
+    console.log(`File ${path} has been added`);
+
+    convertOtpXlsxToCsv(path, "OTP_N");
 
     // Remove the file after processing
     fs.unlinkSync(path);
@@ -36,7 +48,7 @@ chokidar
     }
   });
 
-const convertOtpXlsxToCsv = (path: string) => {
+const convertOtpXlsxToCsv = (path: string, account: "OTP_A" | "OTP_N") => {
   const workbook = XLSX.readFile(path);
 
   // Get the active worksheet
@@ -65,14 +77,19 @@ const convertOtpXlsxToCsv = (path: string) => {
 
   const csvData = XLSX.utils.sheet_to_csv(modifiedSheet);
 
-  const fileName = `OTP_${new Date().toISOString()}`;
+  const fileName = `${account}_${new Date().toISOString()}`;
 
   // Save the csv file to the import folder
   fs.writeFileSync(`${IMPORT_FOLDER}/${fileName}.csv`, csvData);
 
+  const configFilePathMap = {
+    OTP_A: "otp_a.json",
+    OTP_N: "otp_n.json",
+  };
+
   // Save the config with the same file name
   fs.copyFileSync(
-    `${FIREFLY_CONFIG_DIR}/otp.json`,
+    `${FIREFLY_CONFIG_DIR}/${configFilePathMap[account]}`,
     `${IMPORT_FOLDER}/${fileName}.json`,
   );
 };
