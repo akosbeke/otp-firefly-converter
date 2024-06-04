@@ -66,7 +66,9 @@ const convertOtpXlsxToCsv = (path: string, account: "OTP_A" | "OTP_N") => {
   // Add a unique id to each transaction using the md5 hash of the transaction date (first column)
   // and adding a copy of the fifth column to the end of the row
   const transactionsModified = transactions.map((transaction) => {
-    const id = md5("otp" + transaction[0].toString());
+    const key = account === "OTP_A" ? "otp" : "otp_n"; // backword compatibility
+
+    const id = md5(key + transaction[0].toString());
     const date = moment(transaction[0].toString()).format("YYYY-MM-DD HH:mm");
     return [id, ...transaction, transaction[4], date];
   });
