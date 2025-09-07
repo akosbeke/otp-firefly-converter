@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "ts-node index.ts",
-    "dev": "ts-node-dev --respawn --clear index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' index.ts",
+    "dev": "ts-node-dev --respawn --clear --compiler-options '{\"module\":\"CommonJS\"}' index.ts"
   },
   "author": "",
   "license": "ISC",
